@@ -1,0 +1,28 @@
+<!-- draw.html (Draw Page) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa Matching</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 Secret Santa Matching 🎄</h1>
+        
+        {% if session.get("user_id") %}
+            <p>Dear {{ name }},</p>
+            <p>Click the button below to find out who your Secret Santa match is!</p>
+
+            <a href="{{ url_for('result', group_id=group_id, name=name) }}" class="btn">
+                🎅 Draw Your Match
+            </a>
+            
+        {% else %}
+            <p>🚫 You must be logged in to see your match.</p>
+            <a href="{{ url_for('login') }}" class="btn">Log In</a>
+        {% endif %}
+    </div>
+</body>
+</html>

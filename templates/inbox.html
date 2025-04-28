@@ -1,0 +1,41 @@
+<!-- inbox.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📩 Your Inbox</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📩 Your Inbox</h1>
+
+        {% if messages %}
+            <p>Dear {{ name }},</p>
+            <p>You have received <strong>{{ messages | length }}</strong> messages! 💌</p>
+
+            <ul class="message-list">
+                {% for message in messages %}
+                    <li class="message-item">
+                        <p>✉️ <strong>Anonymous:</strong> {{ message[1] }}</p>
+                        {% if message[2] %}
+                            <p>↩️ <strong>Your Reply:</strong> {{ message[2] }}</p>
+                        {% else %}
+                            <form method="POST">
+                                <textarea name="reply" placeholder="Write your reply here..." required></textarea>
+                                <input type="hidden" name="message_id" value="{{ message[0] }}">
+                                <button type="submit">↩️ Send Reply</button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>📭 No new messages yet. Try again later!</p>
+        {% endif %}
+
+        <a href="{{ url_for('result', group_id=group_id, name=name) }}" class="btn">🔙 Back to Match</a>
+    </div>
+</body>
+</html>

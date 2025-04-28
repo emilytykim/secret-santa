@@ -1,0 +1,35 @@
+<!-- sent_messages.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Sent Messages</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📤 Sent Messages</h1>
+
+        {% if messages %}
+            <p>Dear {{ name }}, here are the messages you sent and the replies received:</p>
+            <ul class="message-list">
+                {% for message, reply in messages %}
+                    <li class="message-item">
+                        <p>✉️ <strong>Message:</strong> {{ message }}</p>
+                        {% if reply %}
+                            <p>📬 <strong>Reply:</strong> {{ reply }}</p>
+                        {% else %}
+                            <p>📭 No reply yet.</p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>📭 You have not sent any messages yet.</p>
+        {% endif %}
+
+        <a href="{{ url_for('result', group_id=group_id, name=name) }}" class="btn">🔙 Back to Match</a>
+    </div>
+</body>
+</html>

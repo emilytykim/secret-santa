@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mailbox</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📬 Secret Santa Mailbox 🎁</h1>
+        <p>Check your messages from your Secret Santa or send a message to your match!</p>
+
+        <div class="mailbox" onclick="location.href='/mailbox';">
+            <div class="notification">{{ unread_messages }}</div>
+        </div>
+
+        <h2>Incoming Questions:</h2>
+        {% for question in questions %}
+            <div class="message-box">
+                <p><strong>From: Anonymous</strong></p>
+                <p>{{ question.question }}</p>
+                <form action="/mailbox" method="POST">
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+                    <input type="text" name="answer" placeholder="Reply here..." required>
+                    <button type="submit">Send Reply</button>
+                </form>
+            </div>
+        {% endfor %}
+
+        <h2>Send a Question to Your Match:</h2>
+        <form action="/mailbox" method="POST">
+            <input type="hidden" name="receiver" value="{{ assigned }}">
+            <textarea name="question" placeholder="Write your question here..." required></textarea>
+            <button type="submit">Send Question</button>
+        </form>
+    </div>
+</body>
+</html>

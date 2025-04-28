@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa Matching</title>
+</head>
+<body>
+    <h1>🎁 Welcome to the Matching Page! 🎄</h1>
+    <p>Dear {{ name }},</p>
+    <p>Click the button below to find out who your Secret Santa match is!</p>
+    <form action="{{ url_for('draw', group_id=group_id, name=name) }}" method="post">
+        <button type="submit">🎅 Draw Your Match</button>
+    </form>
+</body>
+</html>

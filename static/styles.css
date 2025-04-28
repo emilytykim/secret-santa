@@ -1,0 +1,102 @@
+/* 🌟 기본 스타일 */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* 📦 반응형 컨테이너 */
+.container {
+    width: 60%;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: 0.3s ease-in-out;
+}
+
+/* 🎨 헤더 */
+h1 {
+    color: #e63946;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* ✨ 버튼 스타일 */
+button, .btn {
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    margin: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+button:hover, .btn:hover {
+    background-color: #d64545;
+    transform: scale(1.05);
+}
+
+/* 🛑 알림 메시지 */
+.alert {
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.alert.success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+/* 📩 반짝이는 메시지 알림 */
+.note {
+    margin-top: 20px;
+    padding: 12px;
+    border: 2px dashed #f0a500;
+    background-color: #fffbe7;
+    cursor: pointer;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+}
+
+.note:hover {
+    background-color: #ffefd5;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 5px #f0a500; }
+    50% { box-shadow: 0 0 20px #f0a500; }
+    100% { box-shadow: 0 0 5px #f0a500; }
+}
+
+/* ✉️ 받은 메시지 리스트 */
+.message-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.message-item {
+    background: #fdf2e9;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
