@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Flask specific
+instance/
+.env
+*.db
+
+# VSCode settings
+.vscode/
+
+# MacOS 시스템 파일
+.DS_Store
+
+# 기타
+*.log
+*.sqlite3
