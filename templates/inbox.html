@@ -22,14 +22,14 @@
                         {% if message[2] %}
                             <p>↩️ <strong>Your Reply:</strong> {{ message[2] }}</p>
                         {% else %}
-                            <form method="POST">
+                            <form 
                                 action="{{ url_for('send_message',
                                 group_id=group_id,
                                 sender_id=session['user_id'],
                                 receiver_id=message[4]) }}"
-                            method="POST"
-                        >
-                        <textarea name="message" placeholder="Write your reply here..." required></textarea>
+                                method="POST"
+                            >
+                        <textarea name="message" placeholder="Write your reply here…" required></textarea>
                         <input type="hidden" name="reply_to" value="{{ message[0] }}">
                         <button type="submit">↩️ Send Reply</button>
                     </form>
@@ -43,5 +43,31 @@
 
         <a href="{{ url_for('result', group_id=group_id, name=name) }}" class="btn">🔙 Back to Match</a>
     </div>
+
+<script>
+    // 모든 “Send Reply” 폼을 찾아서 AJAX 로 처리
+    document.querySelectorAll('.message-item form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();  // 기본 폼 제출 차단
+    
+        fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(new FormData(form))
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            // AJAX 성공 시, 페이지를 리로드 해 새로고침된 inbox를 보여줍니다
+            window.location.reload();
+          } else {
+            alert(data.error);
+          }
+        })
+        .catch(err => alert('네트워크 오류'));
+      });
+    });
+    </script>
+    
 </body>
 </html>

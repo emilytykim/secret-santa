@@ -416,6 +416,13 @@ def result(group_id, name):
     """, (giver_id, group_id))
     unread_count = cursor.fetchone()[0]
 
+    cursor.execute("""
+        SELECT COUNT(*) FROM messages
+        WHERE sender_id = ? AND group_id = ? AND reply IS NOT NULL
+    """, (giver_id, group_id))
+    reply_count = cursor.fetchone()[0]
+
+
     conn.close()
 
     return render_template("result.html", 
@@ -425,7 +432,8 @@ def result(group_id, name):
                            giver_id=giver_id, 
                            receiver_id=receiver_id, 
                            remaining_chances=remaining_chances, 
-                           unread_count=unread_count)  # ✅ unread_count 추가
+                           unread_count=unread_count,  # ✅ unread_count 추가
+                           reply_count=reply_count) 
 
 
 def generate_random_matches(group_id):
