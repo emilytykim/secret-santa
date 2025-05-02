@@ -347,6 +347,7 @@ def send_message(group_id, sender_id, receiver_id):
             "UPDATE messages SET reply = ?, read = 0 WHERE id = ? AND receiver_id = ?",
             (text, reply_to, session["user_id"])
         )
+        remaining_chances = None
     else:
         # 질문 저장 (최대 3회 제한)
         cursor.execute(
@@ -362,11 +363,13 @@ def send_message(group_id, sender_id, receiver_id):
             "INSERT INTO messages (group_id, sender_id, receiver_id, message) VALUES (?, ?, ?, ?)",
             (group_id, sender_id, receiver_id, text)
         )
+        remaining_chances = 3 - (used + 1)
 
     conn.commit()
     conn.close()
 
-    return jsonify({"success": True, "remaining_chances": 3 - used if not reply_to else None})
+    
+    return jsonify({"success": True, "remaining_chances": remaining_chances})
 
 @app.route("/result/<int:group_id>/<name>", methods=["GET"])
 def result(group_id, name):
@@ -472,7 +475,8 @@ def inbox(group_id):
 
     # 받은 메시지 가져오기 (읽음 여부 포함)
     cursor.execute("""
-        SELECT id, message, reply, read FROM messages
+        SELECT id, message, reply, read, sender_id
+        FROM messages
         WHERE receiver_id = ? AND group_id = ?
         ORDER BY sent_at DESC
     """, (user_id, group_id))

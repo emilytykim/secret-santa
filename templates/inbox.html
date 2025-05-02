@@ -23,10 +23,16 @@
                             <p>↩️ <strong>Your Reply:</strong> {{ message[2] }}</p>
                         {% else %}
                             <form method="POST">
-                                <textarea name="reply" placeholder="Write your reply here..." required></textarea>
-                                <input type="hidden" name="message_id" value="{{ message[0] }}">
-                                <button type="submit">↩️ Send Reply</button>
-                            </form>
+                                action="{{ url_for('send_message',
+                                group_id=group_id,
+                                sender_id=session['user_id'],
+                                receiver_id=message[4]) }}"
+                            method="POST"
+                        >
+                        <textarea name="message" placeholder="Write your reply here..." required></textarea>
+                        <input type="hidden" name="reply_to" value="{{ message[0] }}">
+                        <button type="submit">↩️ Send Reply</button>
+                    </form>
                         {% endif %}
                     </li>
                 {% endfor %}
