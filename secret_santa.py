@@ -82,19 +82,6 @@ def init_db():
         )
     """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            group_id INTEGER NOT NULL,
-            sender_id INTEGER NOT NULL,
-            receiver_id INTEGER NOT NULL,
-            message TEXT NOT NULL,
-            sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (group_id) REFERENCES groups (id),
-            FOREIGN KEY (sender_id) REFERENCES participants (id),
-            FOREIGN KEY (receiver_id) REFERENCES participants (id)
-        )
-    """)
 
     # ✅ `read` 컬럼이 없으면 추가
     try:
@@ -344,34 +331,42 @@ def send_message(group_id, giver_id, receiver_id):
     if not session.get("user_id"):
         return jsonify({"success": False, "error": "Please log in to send messages."})
 
-    message = request.form.get("message")
+    text = request.form.get("message")
+    reply_to = request.form.get("reply_to")  # 답장할 message id
 
-    if not message:
+    if not text:
         return jsonify({"success": False, "error": "Message cannot be empty."})
 
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
-    # 현재 사용자의 질문 횟수 확인
-    cursor.execute("SELECT COUNT(*) FROM messages WHERE sender_id = ? AND group_id = ?", (giver_id, group_id))
-    used_chances = cursor.fetchone()[0]
+    # 질문인지 답장인지 구분
+    if reply_to:
+        # 답장 저장
+        cursor.execute(
+            "UPDATE messages SET reply = ?, read = 0 WHERE id = ? AND receiver_id = ?",
+            (text, reply_to, session["user_id"])
+        )
+    else:
+        # 질문 저장 (최대 3회 제한)
+        cursor.execute(
+            "SELECT COUNT(*) FROM messages WHERE sender_id = ? AND group_id = ?",
+            (sender_id, group_id)
+        )
+        used = cursor.fetchone()[0]
+        if used >= 3:
+            conn.close()
+            return jsonify({"success": False, "error": "No remaining chances to ask questions."})
 
-    if used_chances >= 3:
-        conn.close()
-        return jsonify({"success": False, "error": "No remaining chances to ask questions."})
+        cursor.execute(
+            "INSERT INTO messages (group_id, sender_id, receiver_id, message) VALUES (?, ?, ?, ?)",
+            (group_id, sender_id, receiver_id, text)
+        )
 
-    # 메시지 저장
-    cursor.execute("""
-        INSERT INTO messages (group_id, sender_id, receiver_id, message)
-        VALUES (?, ?, ?, ?)
-    """, (group_id, giver_id, receiver_id, message))
     conn.commit()
-
-    # 남은 질문 횟수 계산
-    remaining_chances = 3 - (used_chances + 1)
     conn.close()
 
-    return jsonify({"success": True, "remaining_chances": remaining_chances})
+    return jsonify({"success": True, "remaining_chances": 3 - used if not reply_to else None})
 
 @app.route("/result/<int:group_id>/<name>", methods=["GET"])
 def result(group_id, name):
