@@ -326,8 +326,8 @@ def draw(group_id, name):
     # ✅ result.html로 리다이렉트 (match 결과를 전달)
     return redirect(url_for("result", group_id=group_id, name=name))
 
-@app.route("/send_message/<int:group_id>/<int:giver_id>/<int:receiver_id>", methods=["POST"])
-def send_message(group_id, giver_id, receiver_id):
+@app.route("/send_message/<int:group_id>/<int:sender_id>/<int:receiver_id>", methods=["POST"])
+def send_message(group_id, sender_id, receiver_id):
     if not session.get("user_id"):
         return jsonify({"success": False, "error": "Please log in to send messages."})
 
