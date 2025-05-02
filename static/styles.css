@@ -100,3 +100,31 @@ button:hover, .btn:hover {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+nav.navbar {
+    background: #ff6f61;
+    padding: 10px 1em;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+nav.navbar .nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+}
+
+nav.navbar .nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+nav.navbar .nav-list li a:hover {
+    color: #ffe8e5;
+    transform: scale(1.05);
+}

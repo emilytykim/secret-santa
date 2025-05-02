@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Secret Santa{% endblock %}</title>
-    <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Secret Santa{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                {% if session.get("user_id") %}
-                    <li><a href="{{ url_for('inbox', group_id=session.get('group_id')) }}">📬 Inbox</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
+  <!-- 공통 네비게이션 바 -->
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li><a href="{{ url_for('home') }}">🏠 Home</a></li>
+      <li><a href="{{ url_for('home') }}">🎉 Join the Party</a></li>
+      <li><a href="{{ url_for('login') }}">🔑 Log In</a></li>
+      <li><a href="{{ url_for('admin') }}">👑 Admin Login</a></li>
+    </ul>
+  </nav>
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>
