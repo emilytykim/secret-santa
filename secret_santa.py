@@ -4,6 +4,7 @@ import sqlite3
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import secrets
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -34,11 +35,13 @@ def init_db():
     # 기존 테이블 생성
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS groups (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            size INTEGER NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_name TEXT NOT NULL,
+        group_size INTEGER NOT NULL,
+        admin_token TEXT UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
     """)
 
     cursor.execute("""
@@ -103,46 +106,71 @@ def init_db():
     conn.close()
 
 
+#THIS ADMIN IS NO LONGER USED BECASUE THIS IS JUST FOR EMILY's PARTY! 
+# @app.route("/admin", methods=["GET", "POST"])
+# def admin():
+#     if request.method == "POST":
+#         username = request.form["username"]
+#         password = request.form["password"]
 
-@app.route("/admin", methods=["GET", "POST"])
-def admin():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+#         if username == "admin" and password == "secret_password":
+#             session["admin"] = True
+#             flash("관리자 로그인 성공!", "success")
+#             return redirect(url_for("manage"))
+#         else:
+#             flash("잘못된 사용자 이름 또는 비밀번호입니다.", "danger")
+#     return render_template("admin.html")
 
-        if username == "admin" and password == "secret_password":
-            session["admin"] = True
-            flash("관리자 로그인 성공!", "success")
-            return redirect(url_for("manage"))
-        else:
-            flash("잘못된 사용자 이름 또는 비밀번호입니다.", "danger")
-    return render_template("admin.html")
+@app.route("/admin/<admin_token>")
+def admin_group(admin_token):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, group_name, group_size FROM groups WHERE admin_token = ?", (admin_token,))
+    group = cursor.fetchone()
+
+    if not group:
+        flash("🚫 유효하지 않은 관리 링크입니다.", "danger")
+        return redirect(url_for("home"))
+
+    cursor.execute("SELECT name, email FROM participants WHERE group_id = ?", (group[0],))
+    participants = cursor.fetchall()
+    conn.close()
+
+    return render_template("admin_group.html", group=group, participants=participants)
+
 
 @app.route("/manage", methods=["GET", "POST"])
 def manage():
-    if not session.get("admin"):
-        flash("🚫 Access Denied. Admins only.", "danger")
-        return redirect(url_for("admin"))
-
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
     if request.method == "POST":
         group_name = request.form["group_name"]
         group_size = int(request.form["group_size"])
+        admin_token = secrets.token_hex(8)
 
         try:
-            cursor.execute("INSERT INTO groups (name, size) VALUES (?, ?)", (group_name, group_size))
+            cursor.execute(
+                "INSERT INTO groups (group_name, group_size, admin_token) VALUES (?, ?, ?)",
+                (group_name, group_size, admin_token)
+            )
             conn.commit()
-            flash(f"그룹 '{group_name}'이(가) 생성되었습니다!", "success")
+            admin_link = url_for('admin_group', admin_token=admin_token, _external=True)
+            flash(f"✅ 그룹이 생성되었습니다! <br>관리 토큰: <code>{admin_token}</code><br><a href='{admin_link}'>여기에서 관리하세요</a>", "success")
+
+
         except sqlite3.Error as e:
             flash(f"데이터베이스 오류: {e}", "danger")
 
-    cursor.execute("SELECT id, name, size FROM groups")
+    # GET 요청: 기존 그룹 보여줄지 여부는 나중에 결정 (지금은 개발용으로 유지)
+    cursor.execute("SELECT group_name, group_size FROM groups")
     groups = cursor.fetchall()
     conn.close()
 
     return render_template("manage.html", groups=groups)
+
+    
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
@@ -155,7 +183,7 @@ def home():
         cursor = conn.cursor()
 
         # 그룹 존재 여부 확인
-        cursor.execute("SELECT id, size FROM groups WHERE name = ?", (group_name,))
+        cursor.execute("SELECT id, group_size FROM groups WHERE group_name = ?", (group_name,))
         group = cursor.fetchone()
 
         if not group:
@@ -272,7 +300,7 @@ def login():
             SELECT p.id, p.group_id
             FROM participants p
             JOIN groups g ON p.group_id = g.id
-            WHERE g.name = ? AND p.name = ? AND p.email = ? AND p.password = ?
+            WHERE g.group_name = ? AND p.name = ? AND p.email = ? AND p.password = ?
         """, (group_name, name, email, password))
         user = cursor.fetchone()
 
@@ -289,6 +317,20 @@ def login():
             return redirect(url_for("login"))
 
     return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("로그아웃되었습니다.", "info")
+    return redirect(url_for("home"))
+
+@app.route("/admin_login", methods=["POST"])
+def admin_login():
+    admin_token = request.form["admin_token"]
+    return redirect(url_for("admin_group", admin_token=admin_token))
+
+
+
 
 @app.route("/draw/<int:group_id>/<name>", methods=["GET"])
 def draw(group_id, name):

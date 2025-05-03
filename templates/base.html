@@ -11,11 +11,15 @@
   <nav class="navbar">
     <ul class="nav-list">
       <li><a href="{{ url_for('home') }}">🏠 Home</a></li>
-      <li><a href="{{ url_for('home') }}">🎉 Join the Party</a></li>
       <li><a href="{{ url_for('login') }}">🔑 Log In</a></li>
-      <li><a href="{{ url_for('admin') }}">👑 Admin Login</a></li>
+      <li><a href="{{ url_for('manage') }}">🎉 Create / Manage</a></li>
+      {% if session.get("user_id") %}
+        <li><a href="{{ url_for('inbox', group_id=session.get('group_id')) }}">📬 Inbox</a></li>
+        <li><a href="{{ url_for('result', group_id=session.get('group_id'), name=session.get('name')) }}">🎁 Result</a></li>
+        <li><a href="{{ url_for('logout') }}">🚪 Logout</a></li>
+      {% endif %}
     </ul>
-  </nav>
+  </nav>  
 
   <main>
     {% block content %}{% endblock %}

@@ -1,54 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Manage Group{% endblock %}
+{% block title %}Create or Manage Secret Santa{% endblock %}
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Groups</title>
-    <link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Manage Groups</h1>
-        <p>Create a new group or manage existing groups below.</p>
+<div class="container">
+    <h1>🎁 Create a Secret Santa Group</h1>
+    <p>Fill out the form below to start a new Secret Santa party.</p>
 
-        <h2>Create New Group</h2>
-        <form action="/manage" method="POST">
-            <div class="form-group">
-                <input type="text" name="group_name" placeholder="Group Name" required>
-            </div>
-            <div class="form-group">
-                <input type="number" name="group_size" placeholder="Group Size" required min="1">
-            </div>
-            <button type="submit" class="btn btn-primary">Create Group</button>
-        </form>
+    <form action="/manage" method="POST" autocomplete="off">
+        <div class="form-group">
+            <input type="text" name="group_name" placeholder="Group Name" required autocomplete="off">
+        </div>
+        <div class="form-group">
+            <input type="number" name="group_size" placeholder="Group Size" required min="1" autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Group</button>
+    </form>
 
-        <h2>Existing Groups</h2>
-        {% if groups %}
-            <ul class="group-list">
-                {% for group in groups %}
-                    <li><strong>{{ group[1] }}</strong> ({{ group[2] }} participants)</li>
+    <hr>
+
+    <h2>👑 Admin Login</h2>
+    <p>If you already created a group, paste your admin token to manage it.</p>
+    <form action="/admin_login" method="POST" autocomplete="off">
+        <div class="form-group">
+            <input type="text" name="admin_token" placeholder="Enter Admin Token" required autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-secondary">Log In to Manage</button>
+    </form>
+
+    <br>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message|safe }}</div>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <p>No groups created yet.</p>
+            </div>
         {% endif %}
+    {% endwith %}
 
-        <!-- 플래시 메시지 -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alert-container">
-                    {% for category, message in messages %}
-                        <div class="alert {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-    </div>
-</body>
-</html>
+    <a href="{{ url_for('home') }}" class="btn">🏠 Back to Home</a>
+</div>
 
 {% endblock %}

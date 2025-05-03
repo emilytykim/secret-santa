@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Manage Group{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h1>👑 Group Admin Page</h1>
+
+    <p><strong>Group Name:</strong> {{ group[1] }}</p>
+    <p><strong>Group Size:</strong> {{ group[2] }}</p>
+
+    <h2>📋 Participants</h2>
+    {% if participants %}
+        <ul>
+            {% for p in participants %}
+                <li>{{ p[0] }} ({{ p[1] }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No one has joined this group yet.</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('home') }}" class="btn">🏠 Back to Home</a>
+</div>
+
+{% endblock %}
