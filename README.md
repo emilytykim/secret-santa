@@ -39,7 +39,7 @@ Frontend: HTML, CSS, JavaScript (AJAX)
 
 Email Service: SMTP (Gmail)
 
-Database: SQLite
+Database: SQLite, Supabase
 
 
 ### How it works
