@@ -1,4 +1,4 @@
-![tree](images/tree_group1.png)
+<img src="images/tree_group1.png" alt="트리 그룹 사진" width="200"/>
 
 ### Overview
 
