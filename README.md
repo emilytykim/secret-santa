@@ -1,4 +1,4 @@
-images/tree_group1.png
+![tree](images/tree_group1.png)
 
 ### Overview
 
