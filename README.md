@@ -1,3 +1,5 @@
+images/tree_group1.png
+
 ### Overview
 
 A full-stack web application to automate Secret Santa events, from participant registration to anonymous messaging and email notifications. Built to streamline the traditional manual process and enhance participant interaction.
